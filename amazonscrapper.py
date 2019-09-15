@@ -11,18 +11,20 @@ headers = {
 
 def check_price():
     """find the online price, and check if the price went down using HTTP requests"""
+    converted_price = ''
+    title = ''
     try:
-
         page = requests.get(url, headers=headers)
-
         soup = BeautifulSoup(page.content, 'html.parser')
-
-        title = soup.find(id="productTitle").get_text()
-
-        price = soup.find(id="priceblock_ourprice").get_text()
-        converted_price = float(price[5:11])
-
-        if (converted_price < 200):
+        title = soup.find(id="productTitle")
+        title = title.get_text() if title else ''
+        price = soup.find(id="priceblock_ourprice")
+        if price:
+            price = price.get_text()
+            converted_price = float(price[5:11])
+        print(converted_price)
+        print(title.strip())
+        if (converted_price and converted_price < 200):
             send_mail()
     except Exception as e:
         print(e)
@@ -53,7 +55,7 @@ def send_mail():
 
         print("EMAIL WAS SENT")
         server.quit()
-        except Exception as e:
+    except Exception as e:
             print(e)
 
 
